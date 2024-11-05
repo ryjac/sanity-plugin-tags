@@ -24,6 +24,7 @@ import {
 } from '../utils/observables'
 import {ReferenceCreateWarning, ReferencePredefinedWarning} from './ReferenceWarnings'
 import styles from './TagsInput.module.css'
+import CustomOption from './CustomOption'
 
 // TODO: Allow reference creation inline
 // TODO: Allow reference merging inline (stretch ??)
@@ -205,6 +206,20 @@ export const TagsInput = forwardRef<StateManagedSelect, TagsInputProps>(
       },
       [onChange]
     )
+    // Define the Tag type based on the Sanity schema with an additional _key
+    type Tag = {
+      value: string
+      label: string
+      _key: string // _key is added to uniquely identify each tag in arrays
+    }
+    // Define handleDelete in TagsInput
+    const handleDelete = useCallback(
+      (tagToDelete: Tag) => {
+        const updatedTags = (selected || []).filter((tag: Tag) => tag._key !== tagToDelete._key)
+        handleChange(updatedTags as RefinedTags) // Call handleChange to update Sanity
+      },
+      [selected, handleChange]
+    )
 
     // set up the options for react-select
     const selectOptions = {
@@ -221,6 +236,9 @@ export const TagsInput = forwardRef<StateManagedSelect, TagsInputProps>(
       },
       onCreateOption: handleCreate,
       onChange: handleChange,
+      components: {
+        Option: (props) => <CustomOption {...props} handleDelete={handleDelete} />, // Pass handleDelete directly
+      },
       isDisabled: readOnly || isLoading,
       styles: {
         menu: (base) => ({
