@@ -206,12 +206,7 @@ export const TagsInput = forwardRef<StateManagedSelect, TagsInputProps>(
       },
       [onChange]
     )
-    // Define the Tag type based on the Sanity schema with an additional _key
-    type Tag = {
-      value: string
-      label: string
-      _key: string // _key is added to uniquely identify each tag in arrays
-    }
+
     // Define handleDelete in TagsInput
     const handleDelete = useCallback(
       (tagToDelete: Tag) => {
